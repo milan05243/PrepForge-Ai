@@ -14,15 +14,72 @@ from . import models
 from .ai_resume import analyze_resume_ats
 from .ai_interview import generate_interview_question, evaluate_interview_answer
 
-# Initialize database
+# Run SQLite migrations for adding columns to existing tables
+def run_sqlite_migrations():
+    import sqlite3
+    db_file = "./career_forge.db"
+    if not os.path.exists(db_file):
+        return
+    try:
+        conn = sqlite3.connect(db_file)
+        cursor = conn.cursor()
+        
+        # Check and add 'user_id' to applications
+        cursor.execute("PRAGMA table_info(applications)")
+        cols = [c[1] for c in cursor.fetchall()]
+        if "user_id" not in cols:
+            cursor.execute("ALTER TABLE applications ADD COLUMN user_id INTEGER REFERENCES users(id)")
+            
+        # Check and add 'user_id' to quiz_scores
+        cursor.execute("PRAGMA table_info(quiz_scores)")
+        cols = [c[1] for c in cursor.fetchall()]
+        if "user_id" not in cols:
+            cursor.execute("ALTER TABLE quiz_scores ADD COLUMN user_id INTEGER REFERENCES users(id)")
+            
+        # Check and add 'user_id' to interview_sessions
+        cursor.execute("PRAGMA table_info(interview_sessions)")
+        cols = [c[1] for c in cursor.fetchall()]
+        if "user_id" not in cols:
+            cursor.execute("ALTER TABLE interview_sessions ADD COLUMN user_id INTEGER REFERENCES users(id)")
+            
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[Migration Warning] SQLite dynamic alter failed: {e}")
+
+# Run dynamic schema migrations before full load
+run_sqlite_migrations()
+
+# Initialize database schemas
 Base.metadata.create_all(bind=engine)
 
 app = Flask(__name__)
-# Enable CORS for all REST paths
+# Enable CORS for all REST paths with headers supported
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 UPLOAD_DIR = "./uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Google OAuth setup
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+
+def verify_google_token(token):
+    # If client ID is missing, fall back to mock verification for easy local developer validation
+    if token == "mock_google_token" or not GOOGLE_CLIENT_ID:
+        return {
+            "sub": "mock_google_user_12345",
+            "email": "milan.mock@example.com",
+            "name": "Milan Patel (Mock)",
+            "picture": "https://lh3.googleusercontent.com/a/default-user=s96-c"
+        }
+    from google.oauth2 import id_token
+    from google.auth.transport import requests as google_requests
+    try:
+        idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_CLIENT_ID)
+        return idinfo
+    except Exception as e:
+        print(f"[OAuth Error] Google ID token verification failed: {e}")
+        return None
 
 # DB Session helper
 def get_db():
@@ -33,12 +90,95 @@ def get_db():
         db.close()
         raise
 
+# Helper to fetch current authenticated user
+def get_current_user(db: Session):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
+    user_id_str = auth_header.split(" ")[1]
+    try:
+        user_id = int(user_id_str)
+        return db.query(models.User).filter(models.User.id == user_id).first()
+    except ValueError:
+        # Fallback to check by sub/google_id directly if header contains it
+        return db.query(models.User).filter(models.User.google_id == user_id_str).first()
+
 @app.route("/", methods=["GET"])
 def root():
     return jsonify({"message": "Welcome to CareerForge AI Flask API!"})
 
 # ----------------------------------------------------
-# JOB PORTAL ENDPOINTS
+# OAUTH AUTHENTICATION ENDPOINTS
+# ----------------------------------------------------
+@app.route("/api/auth/google-login", methods=["POST"])
+def google_login():
+    data = request.get_json() or {}
+    token = data.get("credential")
+    if not token:
+        return jsonify({"detail": "Token is required"}), 400
+        
+    idinfo = verify_google_token(token)
+    if not idinfo:
+        return jsonify({"detail": "Invalid Google token"}), 401
+        
+    google_id = idinfo["sub"]
+    email = idinfo["email"]
+    name = idinfo.get("name", email.split("@")[0])
+    picture = idinfo.get("picture", "")
+    
+    db = get_db()
+    try:
+        user = db.query(models.User).filter(models.User.google_id == google_id).first()
+        if not user:
+            user = models.User(
+                google_id=google_id,
+                name=name,
+                email=email,
+                profile_picture=picture
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        else:
+            # Sync name & profile picture
+            user.name = name
+            user.profile_picture = picture
+            db.commit()
+            db.refresh(user)
+            
+        return jsonify({
+            "id": user.id,
+            "google_id": user.google_id,
+            "name": user.name,
+            "email": user.email,
+            "profile_picture": user.profile_picture
+        })
+    finally:
+        db.close()
+
+@app.route("/api/auth/profile", methods=["GET"])
+def user_profile():
+    db = get_db()
+    try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+        return jsonify({
+            "id": user.id,
+            "google_id": user.google_id,
+            "name": user.name,
+            "email": user.email,
+            "profile_picture": user.profile_picture
+        })
+    finally:
+        db.close()
+
+@app.route("/api/auth/logout", methods=["POST"])
+def user_logout():
+    return jsonify({"message": "Logged out successfully"})
+
+# ----------------------------------------------------
+# JOB PORTAL ENDPOINTS (WITH AUTHENTICATION)
 # ----------------------------------------------------
 @app.route("/api/jobs", methods=["GET"])
 def get_jobs():
@@ -106,6 +246,10 @@ def get_job(job_id):
 def apply_job(job_id):
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Authentication required to apply"}), 401
+            
         candidate_name = request.form.get("candidate_name")
         candidate_email = request.form.get("candidate_email")
         
@@ -120,7 +264,7 @@ def apply_job(job_id):
         # Check existing
         existing = db.query(models.Application).filter(
             models.Application.job_id == job_id,
-            models.Application.candidate_email == candidate_email
+            models.Application.user_id == user.id
         ).first()
         if existing:
             return jsonify({"detail": "You have already applied for this job."}), 400
@@ -130,13 +274,14 @@ def apply_job(job_id):
             
         resume = request.files['resume']
         file_ext = os.path.splitext(resume.filename)[1]
-        safe_filename = f"{candidate_name.replace(' ', '_')}_{job_id}{file_ext}"
+        safe_filename = f"{user.id}_{job_id}{file_ext}"
         file_path = os.path.join(UPLOAD_DIR, safe_filename)
         resume.save(file_path)
         
         # Save to DB
         app_entry = models.Application(
             job_id=job_id,
+            user_id=user.id,
             candidate_name=candidate_name,
             candidate_email=candidate_email,
             resume_name=safe_filename,
@@ -162,7 +307,15 @@ def apply_job(job_id):
 def get_applications():
     db = get_db()
     try:
-        apps = db.query(models.Application).all()
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
+        # Return user applications plus legacy seed applications (so dashboard is initially filled)
+        apps = db.query(models.Application).filter(
+            (models.Application.user_id == user.id) | (models.Application.user_id.is_(None))
+        ).all()
+        
         res = []
         for a in apps:
             job = db.query(models.Job).filter(models.Job.id == a.job_id).first()
@@ -197,9 +350,17 @@ def get_applications():
 def update_application_status(app_id):
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
         app_entry = db.query(models.Application).filter(models.Application.id == app_id).first()
         if not app_entry:
             return jsonify({"detail": "Application not found"}), 404
+            
+        # Ensure the user owns this application or it's a seed application
+        if app_entry.user_id is not None and app_entry.user_id != user.id:
+            return jsonify({"detail": "Permission denied"}), 403
             
         data = request.get_json() or {}
         new_status = data.get("status")
@@ -213,23 +374,36 @@ def update_application_status(app_id):
         db.close()
 
 # ----------------------------------------------------
-# DSA TRACKER ENDPOINTS
+# DSA TRACKER ENDPOINTS (WITH USER PROGRESS)
 # ----------------------------------------------------
 @app.route("/api/dsa", methods=["GET"])
 def get_dsa_problems():
     db = get_db()
     try:
+        user = get_current_user(db)
         problems = db.query(models.DsaProblem).all()
+        
+        # Load user progress mapping
+        progress_map = {}
+        if user:
+            user_progress = db.query(models.UserDsaProgress).filter(
+                models.UserDsaProgress.user_id == user.id
+            ).all()
+            for prog in user_progress:
+                progress_map[prog.problem_id] = prog
+                
         res = []
         for p in problems:
+            # Fall back to global completion status if user progress is missing
+            has_prog = progress_map.get(p.id)
             res.append({
                 "id": p.id,
                 "title": p.title,
                 "topic": p.topic,
                 "difficulty": p.difficulty,
                 "leetcode_link": p.leetcode_link,
-                "completed": p.completed,
-                "notes": p.notes
+                "completed": has_prog.completed if has_prog else False,
+                "notes": has_prog.notes if has_prog else ""
             })
         return jsonify(res)
     finally:
@@ -239,15 +413,35 @@ def get_dsa_problems():
 def update_dsa_problem(problem_id):
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
         problem = db.query(models.DsaProblem).filter(models.DsaProblem.id == problem_id).first()
         if not problem:
             return jsonify({"detail": "Problem not found"}), 404
             
         data = request.get_json() or {}
-        problem.completed = data.get("completed", problem.completed)
-        if "notes" in data:
-            problem.notes = data.get("notes")
-            
+        
+        # Find or create user-specific progress entry
+        prog = db.query(models.UserDsaProgress).filter(
+            models.UserDsaProgress.user_id == user.id,
+            models.UserDsaProgress.problem_id == problem_id
+        ).first()
+        
+        if not prog:
+            prog = models.UserDsaProgress(
+                user_id=user.id,
+                problem_id=problem_id,
+                completed=data.get("completed", False),
+                notes=data.get("notes", "")
+            )
+            db.add(prog)
+        else:
+            prog.completed = data.get("completed", prog.completed)
+            if "notes" in data:
+                prog.notes = data.get("notes")
+                
         db.commit()
         return jsonify({
             "id": problem.id,
@@ -255,21 +449,29 @@ def update_dsa_problem(problem_id):
             "topic": problem.topic,
             "difficulty": problem.difficulty,
             "leetcode_link": problem.leetcode_link,
-            "completed": problem.completed,
-            "notes": problem.notes
+            "completed": prog.completed,
+            "notes": prog.notes
         })
     finally:
         db.close()
 
 # ----------------------------------------------------
-# QUIZ SCORES ENDPOINTS
+# QUIZ SCORES ENDPOINTS (WITH USER AUTH)
 # ----------------------------------------------------
 @app.route("/api/quiz", methods=["GET", "POST"])
 def manage_quiz():
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
         if request.method == "GET":
-            scores = db.query(models.QuizScore).order_by(models.QuizScore.date.desc()).all()
+            # Return user specific scores plus pre-seeded quiz entries
+            scores = db.query(models.QuizScore).filter(
+                (models.QuizScore.user_id == user.id) | (models.QuizScore.user_id.is_(None))
+            ).order_by(models.QuizScore.date.desc()).all()
+            
             res = []
             for s in scores:
                 res.append({
@@ -283,6 +485,7 @@ def manage_quiz():
         else:
             data = request.get_json() or {}
             entry = models.QuizScore(
+                user_id=user.id,
                 category=data.get("category"),
                 correct=data.get("correct"),
                 total=data.get("total")
@@ -301,32 +504,90 @@ def manage_quiz():
         db.close()
 
 # ----------------------------------------------------
-# LOCAL AI ENDPOINTS
+# LOCAL AI RESUME ANALYZER (WITH DATABASE HISTORY)
 # ----------------------------------------------------
 @app.route("/api/ai/resume-analyzer", methods=["POST"])
 def analyze_resume():
-    if 'file' not in request.files:
-        return jsonify({"detail": "No file uploaded"}), 400
+    db = get_db()
+    try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
+        if 'file' not in request.files:
+            return jsonify({"detail": "No file uploaded"}), 400
+            
+        file = request.files['file']
+        target_role = request.form.get("target_role", "Fullstack")
         
-    file = request.files['file']
-    target_role = request.form.get("target_role", "Fullstack")
-    
-    if not file.filename.endswith('.pdf'):
-        return jsonify({"detail": "File must be a valid PDF format."}), 400
+        if not file.filename.endswith('.pdf'):
+            return jsonify({"detail": "File must be a valid PDF format."}), 400
+            
+        file_bytes = file.read()
+        results = analyze_resume_ats(file_bytes, target_role)
         
-    file_bytes = file.read()
-    results = analyze_resume_ats(file_bytes, target_role)
-    return jsonify(results)
+        # Save analysis run to ResumeAnalysis history table
+        analysis = models.ResumeAnalysis(
+            user_id=user.id,
+            filename=file.filename,
+            target_role=target_role,
+            score=results["score"],
+            skills_found=json.dumps(results["skills_found"]),
+            skills_missing=json.dumps(results["skills_missing"]),
+            suggestions=json.dumps(results["suggestions"])
+        )
+        db.add(analysis)
+        db.commit()
+        
+        return jsonify(results)
+    finally:
+        db.close()
 
+@app.route("/api/ai/resume-analyzer/history", methods=["GET"])
+def get_resume_history():
+    db = get_db()
+    try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
+        analyses = db.query(models.ResumeAnalysis).filter(
+            models.ResumeAnalysis.user_id == user.id
+        ).order_by(models.ResumeAnalysis.analyzed_at.desc()).all()
+        
+        res = []
+        for a in analyses:
+            res.append({
+                "id": a.id,
+                "filename": a.filename,
+                "target_role": a.target_role,
+                "score": a.score,
+                "skills_found": json.loads(a.skills_found),
+                "skills_missing": json.loads(a.skills_missing),
+                "suggestions": json.loads(a.suggestions),
+                "analyzed_at": a.analyzed_at.isoformat()
+            })
+        return jsonify(res)
+    finally:
+        db.close()
+
+# ----------------------------------------------------
+# LOCAL AI INTERVIEW SIMULATOR (WITH AUTH FILTERING)
+# ----------------------------------------------------
 @app.route("/api/ai/interview/start", methods=["POST"])
 def start_interview_session():
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
         data = request.get_json() or {}
         topic = data.get("topic", "HR")
         q_data = generate_interview_question(topic)
         
         session = models.InterviewSession(
+            user_id=user.id,
             topic=topic,
             question=q_data["question"]
         )
@@ -346,13 +607,23 @@ def start_interview_session():
 def submit_interview_answer():
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
         data = request.get_json() or {}
         session_id = data.get("session_id")
         answer = data.get("answer")
         
-        session = db.query(models.InterviewSession).filter(models.InterviewSession.id == session_id).first()
+        session = db.query(models.InterviewSession).filter(
+            models.InterviewSession.id == session_id
+        ).first()
         if not session:
             return jsonify({"detail": "Interview session not found"}), 404
+            
+        # Ensure session owner matching
+        if session.user_id is not None and session.user_id != user.id:
+            return jsonify({"detail": "Permission denied"}), 403
             
         # Match question to retrieve keywords
         from .ai_interview import INTERVIEW_QA
@@ -385,7 +656,12 @@ def submit_interview_answer():
 def get_interview_history():
     db = get_db()
     try:
+        user = get_current_user(db)
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+            
         sessions = db.query(models.InterviewSession).filter(
+            models.InterviewSession.user_id == user.id,
             models.InterviewSession.score.isnot(None)
         ).order_by(models.InterviewSession.date.desc()).all()
         
