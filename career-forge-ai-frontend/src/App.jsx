@@ -140,8 +140,22 @@ export default function App() {
   B.Tech CSE (AI), Medi-Caps University
 </p>
             <div className="flex gap-4">
-              <span className="hover:text-indigo-400 cursor-pointer">LinkedIn Project</span>
-              <span className="hover:text-indigo-400 cursor-pointer">GitHub Repository</span>
+              <a
+  href="https://careerforge-ai-rosy.vercel.app"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="hover:text-indigo-400"
+>
+  Live Demo
+</a>
+              <a
+  href="https://github.com/milan05243/careerforge-ai"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="hover:text-indigo-400"
+>
+  GitHub Repository
+</a>
             </div>
           </div>
         </footer>
