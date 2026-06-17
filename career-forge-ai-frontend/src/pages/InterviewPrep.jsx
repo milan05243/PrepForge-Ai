@@ -48,7 +48,7 @@ const PREP_DATA = {
   }
 };
 
-export default function InterviewPrep({ apiBase, triggerToast }) {
+export default function InterviewPrep({ apiBase, authHeaders, triggerToast }) {
   const [activeTab, setActiveTab] = useState('dbms');
   const [selectedAnswers, setSelectedAnswers] = useState({}); // { qId: selectedIndex }
   const [scoreLogged, setScoreLogged] = useState({}); // { qId: true }
@@ -66,7 +66,10 @@ export default function InterviewPrep({ apiBase, triggerToast }) {
     try {
       await fetch(`${apiBase}/api/quiz`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({
           category: currentSubject.title,
           correct: isCorrect ? 1 : 0,

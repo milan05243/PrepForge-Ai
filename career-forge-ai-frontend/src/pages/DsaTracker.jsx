@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardBody } from '../components/Card';
 import { ListSkeleton } from '../components/Skeletons';
 import { CheckSquare, Square, ExternalLink, ChevronDown, ChevronUp, Save, BarChart } from 'lucide-react';
 
-export default function DsaTracker({ apiBase, triggerToast, setProblemForArena }) {
+export default function DsaTracker({ apiBase, authHeaders, triggerToast, setProblemForArena }) {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedTopic, setExpandedTopic] = useState('Arrays');
@@ -12,7 +12,9 @@ export default function DsaTracker({ apiBase, triggerToast, setProblemForArena }
 
   async function fetchProblems() {
     try {
-      const res = await fetch(`${apiBase}/api/dsa`);
+      const res = await fetch(`${apiBase}/api/dsa`, {
+        headers: { ...authHeaders }
+      });
       const data = await res.json();
       setProblems(data);
       
@@ -41,7 +43,10 @@ export default function DsaTracker({ apiBase, triggerToast, setProblemForArena }
     try {
       const res = await fetch(`${apiBase}/api/dsa/${problem.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({
           completed: !problem.completed,
           notes: notes[problem.id] || ''
@@ -63,7 +68,10 @@ export default function DsaTracker({ apiBase, triggerToast, setProblemForArena }
       const prob = problems.find(p => p.id === problemId);
       const res = await fetch(`${apiBase}/api/dsa/${problemId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({
           completed: prob ? prob.completed : false,
           notes: notes[problemId] || ''

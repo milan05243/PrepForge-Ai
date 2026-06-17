@@ -102,7 +102,7 @@ const PROBLEM_DETAILS = {
   }
 };
 
-export default function CodingArena({ apiBase, problemId, triggerToast, navigateTo }) {
+export default function CodingArena({ apiBase, authHeaders, problemId, triggerToast, navigateTo }) {
   const [lang, setLang] = useState('python');
   const [leftTab, setLeftTab] = useState('desc');
   const [code, setCode] = useState('');
@@ -131,7 +131,10 @@ export default function CodingArena({ apiBase, problemId, triggerToast, navigate
     try {
       const res = await fetch(`${apiBase}/api/arena/run`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({
           problem_id: problemId,
           language: lang,
@@ -146,10 +149,13 @@ export default function CodingArena({ apiBase, problemId, triggerToast, navigate
       if (data.success) {
         setOutput(data.output);
         if (submit) {
-          // Send completion trigger to backend
+          // Send completion trigger to backend linked to user account
           await fetch(`${apiBase}/api/dsa/${problemId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              ...authHeaders
+            },
             body: JSON.stringify({ completed: true })
           });
           triggerToast('Submission Passed! Problem solved successfully.', 'success');

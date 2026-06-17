@@ -4,7 +4,7 @@ import { DashboardSkeleton } from '../components/Skeletons';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { Briefcase, CheckCircle, Code, Cpu, Award } from 'lucide-react';
 
-export default function Dashboard({ apiBase }) {
+export default function Dashboard({ apiBase, authHeaders }) {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     dsaDone: 0,
@@ -20,9 +20,9 @@ export default function Dashboard({ apiBase }) {
     async function fetchData() {
       try {
         const [dsaRes, appRes, quizRes] = await Promise.all([
-          fetch(`${apiBase}/api/dsa`),
-          fetch(`${apiBase}/api/applications`),
-          fetch(`${apiBase}/api/quiz`)
+          fetch(`${apiBase}/api/dsa`, { headers: { ...authHeaders } }),
+          fetch(`${apiBase}/api/applications`, { headers: { ...authHeaders } }),
+          fetch(`${apiBase}/api/quiz`, { headers: { ...authHeaders } })
         ]);
 
         const dsaData = await dsaRes.json();

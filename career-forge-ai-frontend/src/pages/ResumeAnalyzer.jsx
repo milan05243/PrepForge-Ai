@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardBody } from '../components/Card';
-import { Upload, HelpCircle, FileText, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertTriangle, Lightbulb, Clock, Eye } from 'lucide-react';
 
-export default function ResumeAnalyzer({ apiBase, triggerToast }) {
+export default function ResumeAnalyzer({ apiBase, authHeaders, triggerToast }) {
   const [file, setFile] = useState(null);
   const [role, setRole] = useState('Fullstack');
   const [analyzing, setAnalyzing] = useState(false);
   const [results, setResults] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  const fetchHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const res = await fetch(`${apiBase}/api/ai/resume-analyzer/history`, {
+        headers: { ...authHeaders }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setHistory(data);
+      }
+    } catch (err) {
+      console.error("Failed to load resume history:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, [apiBase]);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -35,6 +58,7 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
     try {
       const res = await fetch(`${apiBase}/api/ai/resume-analyzer`, {
         method: 'POST',
+        headers: { ...authHeaders },
         body: formData,
       });
 
@@ -46,6 +70,7 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
       const data = await res.json();
       setResults(data);
       triggerToast('ATS analysis completed successfully!', 'success');
+      fetchHistory(); // Refresh history panel
     } catch (err) {
       console.error(err);
       triggerToast(err.message || 'ATS analysis failed.', 'error');
@@ -54,7 +79,18 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
     }
   };
 
-  // Color matching based on ATS score
+  const loadPastResult = (item) => {
+    // Transform history entry keys back to view schema if needed
+    setResults({
+      ats_score: item.score,
+      extracted_skills: item.skills_found,
+      missing_skills: item.skills_missing,
+      suggestions: item.suggestions
+    });
+    setRole(item.target_role);
+    triggerToast(`Loaded ATS review for ${item.target_role}`, "info");
+  };
+
   const getScoreColor = (score) => {
     if (score >= 75) return 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5';
     if (score >= 50) return 'text-amber-400 border-amber-500/20 bg-amber-500/5';
@@ -69,8 +105,8 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Upload Form Box */}
-        <div className="lg:col-span-1">
+        {/* Upload Form & History Sidebar */}
+        <div className="lg:col-span-1 space-y-6">
           <Card hoverEffect={false}>
             <CardHeader>
               <CardTitle>Upload Resume</CardTitle>
@@ -135,12 +171,59 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
               </form>
             </CardBody>
           </Card>
+
+          {/* Past Analyses History Panel */}
+          <Card hoverEffect={false}>
+            <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 pb-4">
+              <CardTitle className="text-sm flex items-center gap-2 text-slate-300">
+                <Clock className="h-4.5 w-4.5 text-indigo-400" /> Evaluation History
+              </CardTitle>
+              <span className="text-[10px] bg-white/5 text-slate-400 px-2 py-0.5 rounded-full font-bold">
+                {history.length}
+              </span>
+            </CardHeader>
+            <CardBody className="max-h-[300px] overflow-y-auto space-y-3 pt-4 custom-scrollbar">
+              {loadingHistory && history.length === 0 ? (
+                <div className="text-center py-4 text-xs text-slate-500">Loading history...</div>
+              ) : history.length === 0 ? (
+                <div className="text-center py-6 text-xs text-slate-500">No past evaluations found.</div>
+              ) : (
+                history.map((item) => (
+                  <div 
+                    key={item.id}
+                    className="p-3 rounded-xl bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 flex items-center justify-between gap-3 transition-all group"
+                  >
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="text-xs font-bold text-white truncate">{item.filename}</p>
+                      <p className="text-[10px] text-slate-400 font-semibold">{item.target_role} • {new Date(item.analyzed_at).toLocaleDateString()}</p>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className={`text-xs font-black px-2 py-1 rounded border ${
+                        item.score >= 75 ? 'text-emerald-400 border-emerald-500/10 bg-emerald-500/5' :
+                        item.score >= 50 ? 'text-amber-400 border-amber-500/10 bg-amber-500/5' :
+                        'text-rose-400 border-rose-500/10 bg-rose-500/5'
+                      }`}>
+                        {item.score}
+                      </span>
+                      <button 
+                        onClick={() => loadPastResult(item)}
+                        className="p-1.5 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                        title="View ATS Report"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardBody>
+          </Card>
         </div>
 
         {/* ATS Results Visualizer */}
         <div className="lg:col-span-2">
           {analyzing && (
-            <div className="h-full min-h-[300px] flex flex-col items-center justify-center space-y-4 glass-panel rounded-xl border border-white/5">
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center space-y-4 glass-panel rounded-xl border border-white/5 bg-white/[0.01]">
               <div className="relative flex items-center justify-center">
                 <div className="animate-ping absolute inline-flex h-12 w-12 rounded-full bg-indigo-400 opacity-20"></div>
                 <FileText className="h-10 w-10 text-indigo-400 animate-bounce-slow" />
@@ -150,9 +233,9 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
           )}
 
           {!analyzing && !results && (
-            <div className="h-full min-h-[300px] flex flex-col items-center justify-center space-y-3 glass-panel rounded-xl border border-white/5 text-slate-500">
-              <FileText className="h-12 w-12" />
-              <p className="text-sm">Upload your PDF resume to start the evaluation dashboard.</p>
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center space-y-3 glass-panel rounded-xl border border-white/5 bg-white/[0.01] text-slate-500">
+              <FileText className="h-12 w-12 animate-pulse-slow text-slate-600" />
+              <p className="text-sm font-medium">Upload your PDF resume or select an evaluation from the history list.</p>
             </div>
           )}
 
@@ -176,7 +259,7 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
                 <Card hoverEffect={false}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-sm text-slate-300">
-                      <CheckCircle2 className="h-4 w-4 text-indigo-400" /> Extracted Skills
+                      <CheckCircle2 className="h-4.5 w-4.5 text-indigo-400" /> Extracted Skills
                     </CardTitle>
                   </CardHeader>
                   <CardBody>
@@ -197,7 +280,7 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
                 <Card hoverEffect={false}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-sm text-slate-300">
-                      <AlertTriangle className="h-4 w-4 text-amber-400" /> Missing Target Skills
+                      <AlertTriangle className="h-4.5 w-4.5 text-amber-400" /> Missing Target Skills
                     </CardTitle>
                   </CardHeader>
                   <CardBody>
@@ -218,7 +301,7 @@ export default function ResumeAnalyzer({ apiBase, triggerToast }) {
                 <Card hoverEffect={false}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-sm text-slate-300">
-                      <Lightbulb className="h-4 w-4 text-amber-400" /> Recommendations
+                      <Lightbulb className="h-4.5 w-4.5 text-amber-400" /> Recommendations
                     </CardTitle>
                   </CardHeader>
                   <CardBody>

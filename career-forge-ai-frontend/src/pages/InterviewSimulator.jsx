@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardBody } from '../components/Card';
 import { Play, Send, Award, History, RotateCcw, AlertCircle } from 'lucide-react';
 
-export default function InterviewSimulator({ apiBase, triggerToast }) {
+export default function InterviewSimulator({ apiBase, authHeaders, triggerToast }) {
   const [topic, setTopic] = useState('DBMS');
   const [session, setSession] = useState(null); // { session_id, topic, question }
   const [answer, setAnswer] = useState('');
@@ -14,7 +14,9 @@ export default function InterviewSimulator({ apiBase, triggerToast }) {
   async function fetchHistory() {
     setLoadingHistory(true);
     try {
-      const res = await fetch(`${apiBase}/api/ai/interview/history`);
+      const res = await fetch(`${apiBase}/api/ai/interview/history`, {
+        headers: { ...authHeaders }
+      });
       const data = await res.json();
       setHistory(data);
     } catch (err) {
@@ -32,7 +34,10 @@ export default function InterviewSimulator({ apiBase, triggerToast }) {
     try {
       const res = await fetch(`${apiBase}/api/ai/interview/start`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({ topic })
       });
       const data = await res.json();
@@ -57,7 +62,10 @@ export default function InterviewSimulator({ apiBase, triggerToast }) {
     try {
       const res = await fetch(`${apiBase}/api/ai/interview/submit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({
           session_id: session.session_id,
           answer: answer

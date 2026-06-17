@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardBody } from '../components/Card';
 import { ListSkeleton } from '../components/Skeletons';
-import { Briefcase, MapPin, DollarSign, Filter, Search, Calendar, ChevronRight, X } from 'lucide-react';
+import { Briefcase, MapPin, DollarSign, Filter, Search, X } from 'lucide-react';
 
-export default function Jobs({ apiBase, triggerToast }) {
+export default function Jobs({ apiBase, user, authHeaders, triggerToast }) {
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,17 @@ export default function Jobs({ apiBase, triggerToast }) {
   const [applyForm, setApplyForm] = useState({ name: '', email: '', resume: null });
   const [submittingApply, setSubmittingApply] = useState(false);
 
+  // Auto-fill user contact info on apply dialog mount
+  useEffect(() => {
+    if (showApplyModal && user) {
+      setApplyForm(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || ''
+      }));
+    }
+  }, [showApplyModal, user]);
+
   async function fetchJobs() {
     try {
       let url = `${apiBase}/api/jobs?`;
@@ -26,7 +37,9 @@ export default function Jobs({ apiBase, triggerToast }) {
       if (selectedExp) url += `experience=${selectedExp}&`;
       if (query) url += `query=${query}&`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: { ...authHeaders }
+      });
       const data = await res.json();
       setJobs(data);
     } catch (err) {
@@ -37,9 +50,13 @@ export default function Jobs({ apiBase, triggerToast }) {
 
   async function fetchApplications() {
     try {
-      const res = await fetch(`${apiBase}/api/applications`);
+      const res = await fetch(`${apiBase}/api/applications`, {
+        headers: { ...authHeaders }
+      });
       const data = await res.json();
-      setApplications(data);
+      if (res.ok) {
+        setApplications(data);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -79,6 +96,7 @@ export default function Jobs({ apiBase, triggerToast }) {
     try {
       const res = await fetch(`${apiBase}/api/jobs/${showApplyModal}/apply`, {
         method: 'POST',
+        headers: { ...authHeaders },
         body: formData,
       });
 
@@ -104,7 +122,10 @@ export default function Jobs({ apiBase, triggerToast }) {
     try {
       const res = await fetch(`${apiBase}/api/applications/${appId}/status`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({ status: newStatus })
       });
 
