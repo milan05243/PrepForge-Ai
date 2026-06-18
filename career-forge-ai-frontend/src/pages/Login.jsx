@@ -182,7 +182,7 @@ window.google.accounts.id.renderButton(
             )}
 
             {/* Google authentication button container */}
-            <div className="flex flex-col items-center gap-4 py-4">
+            <div className="flex flex-col items-center gap-4 py-4 min-h-[120px]">
               {loading ? (
   <div className="flex flex-col items-center gap-3 py-4">
     <div className="h-6 w-6 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
@@ -193,8 +193,7 @@ window.google.accounts.id.renderButton(
               ) : (
                 <div className="space-y-4">
                   {/* Google OAuth GSI Button Container */}
-<div id="google-signin-btn" className="flex justify-center transition-all hover:scale-[1.02]" />
-
+<div id="google-signin-btn" className="flex justify-center" />
                   
                   {/* Developer Quick-Login Bypass */}
                   <div className="relative flex py-2 items-center">
