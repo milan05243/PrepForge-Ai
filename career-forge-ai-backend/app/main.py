@@ -69,7 +69,7 @@ def verify_google_token(token):
         return {
             "sub": "mock_google_user_12345",
             "email": "milan.mock@example.com",
-            "name": "Milan Patel (Mock)",
+            "name": "Milan Choudhary (Mock)",
             "picture": "https://lh3.googleusercontent.com/a/default-user=s96-c"
         }
     from google.oauth2 import id_token
@@ -172,6 +172,24 @@ def user_profile():
         })
     finally:
         db.close()
+
+@app.route("/debug/users")
+def debug_users():
+    db = get_db()
+    try:
+        users = db.query(models.User).all()
+        return jsonify([
+            {
+                "id": u.id,
+                "google_id": u.google_id,
+                "email": u.email,
+                "name": u.name
+            }
+            for u in users
+        ])
+    finally:
+        db.close()
+
 
 @app.route("/api/auth/logout", methods=["POST"])
 def user_logout():
