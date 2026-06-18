@@ -193,7 +193,7 @@ window.google.accounts.id.renderButton(
                   {/* Google OAuth GSI Button Container */}
 <div
   id="google-signin-btn"
-  className="flex justify-center transition-all hover:scale-[1.02]"
+  className="flex justify-center"
 ></div>
                   
                   {/* Developer Quick-Login Bypass */}
