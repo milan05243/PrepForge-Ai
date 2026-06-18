@@ -8,13 +8,13 @@ export default function Login({ apiBase, onLoginSuccess, triggerToast }) {
   // Initialize Google Identity Services
   useEffect(() => {
     const initGoogleGSI = () => {
-  console.log("window.google =", window.google);
+  
 
 if (window.google) { 
     // Read client ID from env or fallback to placeholder
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 
-    console.log("CLIENT ID:", clientId);
+    
 
     try {
       window.google.accounts.id.initialize({
@@ -23,7 +23,7 @@ if (window.google) {
             auto_select: false
           });
 
-          alert("Render Button Reached");
+          
 
 window.google.accounts.id.renderButton(
   document.getElementById("google-signin-btn"),
@@ -191,12 +191,10 @@ window.google.accounts.id.renderButton(
               ) : (
                 <div className="space-y-4">
                   {/* Google OAuth GSI Button Container */}
-                  <div
+<div
   id="google-signin-btn"
-  className="flex justify-center transition-all hover:scale-[1.02] border border-red-500 p-4"
->
-  GOOGLE BUTTON SHOULD APPEAR HERE
-</div>
+  className="flex justify-center transition-all hover:scale-[1.02]"
+></div>
                   
                   {/* Developer Quick-Login Bypass */}
                   <div className="relative flex py-2 items-center">
@@ -209,7 +207,7 @@ window.google.accounts.id.renderButton(
                     onClick={handleMockLogin}
                     className="w-full py-3 px-4 rounded-full bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/20 hover:border-indigo-500/35 text-indigo-400 font-bold text-xs uppercase tracking-wider transition-all"
                   >
-                    Use Developer Profile TEST123
+                    Use Developer Profile
                   </button>
                 </div>
               )}
