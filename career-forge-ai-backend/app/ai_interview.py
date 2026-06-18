@@ -2,18 +2,246 @@ import random
 
 INTERVIEW_QA = {
     "DBMS": [
-        {
-            "id": "db-q1",
-            "question": "What is Database Normalization and why do we use it? Explain 1NF, 2NF, and 3NF.",
-            "keywords": ["normalization", "redundancy", "anomaly", "atomic", "partial dependency", "transitive dependency", "1nf", "2nf", "3nf", "table"],
-            "ideal": "Normalization is the process of organizing database tables to reduce redundancy and dependency anomalies. 1NF ensures values are atomic. 2NF removes partial dependencies (every non-key attribute must fully depend on primary key). 3NF removes transitive dependencies."
-        },
-        {
-            "id": "db-q2",
-            "question": "Explain the ACID properties in transactions. Why are they critical?",
-            "keywords": ["acid", "atomicity", "consistency", "isolation", "durability", "transaction", "rollback", "commit", "integrity"],
-            "ideal": "ACID properties ensure transaction reliability. Atomicity guarantees 'all or nothing'. Consistency keeps database states valid. Isolation runs transactions concurrently without interference. Durability ensures committed changes survive crashes."
-        }
+{
+    "id": "db-q11",
+    "question": "What is Referential Integrity?",
+    "keywords": ["referential integrity", "foreign key", "consistency", "relationship"],
+    "ideal": "Referential integrity ensures relationships between tables remain valid using foreign keys."
+},
+{
+    "id": "db-q12",
+    "question": "What are SQL Joins?",
+    "keywords": ["join", "tables", "combine", "records"],
+    "ideal": "Joins combine rows from multiple tables using related columns."
+},
+{
+    "id": "db-q13",
+    "question": "Explain INNER JOIN.",
+    "keywords": ["inner join", "matching", "rows"],
+    "ideal": "INNER JOIN returns only matching rows from both tables."
+},
+{
+    "id": "db-q14",
+    "question": "Explain LEFT JOIN.",
+    "keywords": ["left join", "all rows", "left table"],
+    "ideal": "LEFT JOIN returns all rows from the left table and matching rows from the right."
+},
+{
+    "id": "db-q15",
+    "question": "Explain RIGHT JOIN.",
+    "keywords": ["right join", "all rows", "right table"],
+    "ideal": "RIGHT JOIN returns all rows from the right table and matching rows from the left."
+},
+{
+    "id": "db-q16",
+    "question": "What is FULL OUTER JOIN?",
+    "keywords": ["full outer join", "all rows", "matching"],
+    "ideal": "Returns all records from both tables whether matched or not."
+},
+{
+    "id": "db-q17",
+    "question": "What is a Composite Key?",
+    "keywords": ["composite key", "multiple columns", "unique"],
+    "ideal": "A composite key uses multiple columns together to uniquely identify a row."
+},
+{
+    "id": "db-q18",
+    "question": "What is a Super Key?",
+    "keywords": ["super key", "unique", "candidate key"],
+    "ideal": "A super key is a set of attributes that uniquely identifies records."
+},
+{
+    "id": "db-q19",
+    "question": "Difference between Primary Key and Unique Key.",
+    "keywords": ["primary key", "unique key", "null"],
+    "ideal": "Primary key cannot be NULL and only one exists; unique key allows one NULL and multiple unique keys."
+},
+{
+    "id": "db-q20",
+    "question": "What are Database Anomalies?",
+    "keywords": ["anomaly", "insert", "update", "delete"],
+    "ideal": "Anomalies are problems caused by redundancy such as insert, update and delete anomalies."
+},
+{
+    "id": "db-q21",
+    "question": "What is an ER Model?",
+    "keywords": ["entity", "relationship", "attribute", "ermodel"],
+    "ideal": "ER Model represents entities, attributes and relationships in a database."
+},
+{
+    "id": "db-q22",
+    "question": "What is an ER Diagram?",
+    "keywords": ["er diagram", "entity", "relationship"],
+    "ideal": "An ER Diagram visually represents database entities and relationships."
+},
+{
+    "id": "db-q23",
+    "question": "What is Cardinality?",
+    "keywords": ["cardinality", "one to one", "one to many", "many to many"],
+    "ideal": "Cardinality defines the number of relationships between entities."
+},
+{
+    "id": "db-q24",
+    "question": "Difference between Entity and Attribute.",
+    "keywords": ["entity", "attribute", "property"],
+    "ideal": "Entity is an object, attribute is a property describing the object."
+},
+{
+    "id": "db-q25",
+    "question": "What is Functional Dependency?",
+    "keywords": ["functional dependency", "attribute", "determine"],
+    "ideal": "Functional dependency exists when one attribute determines another."
+},
+{
+    "id": "db-q26",
+    "question": "What is BCNF?",
+    "keywords": ["bcnf", "normalization", "functional dependency"],
+    "ideal": "BCNF is a stronger form of 3NF where every determinant is a candidate key."
+},
+{
+    "id": "db-q27",
+    "question": "Difference between 3NF and BCNF.",
+    "keywords": ["3nf", "bcnf", "normalization"],
+    "ideal": "BCNF is stricter than 3NF and removes more redundancy."
+},
+{
+    "id": "db-q28",
+    "question": "What is Data Independence?",
+    "keywords": ["data independence", "schema", "change"],
+    "ideal": "Data independence allows schema changes without affecting applications."
+},
+{
+    "id": "db-q29",
+    "question": "What is Logical Data Independence?",
+    "keywords": ["logical data independence", "schema"],
+    "ideal": "Ability to change logical schema without affecting external views."
+},
+{
+    "id": "db-q30",
+    "question": "What is Physical Data Independence?",
+    "keywords": ["physical data independence", "storage"],
+    "ideal": "Ability to change physical storage without affecting logical schema."
+},
+{
+    "id": "db-q31",
+    "question": "What is Schema in DBMS?",
+    "keywords": ["schema", "structure", "database"],
+    "ideal": "Schema defines the overall structure of the database."
+},
+{
+    "id": "db-q32",
+    "question": "What is Instance in DBMS?",
+    "keywords": ["instance", "current data"],
+    "ideal": "Instance refers to the data stored in the database at a particular time."
+},
+{
+    "id": "db-q33",
+    "question": "Difference between Schema and Instance.",
+    "keywords": ["schema", "instance", "structure", "data"],
+    "ideal": "Schema is structure; instance is actual data."
+},
+{
+    "id": "db-q34",
+    "question": "What is a Trigger?",
+    "keywords": ["trigger", "automatic", "event"],
+    "ideal": "A trigger automatically executes when a specified database event occurs."
+},
+{
+    "id": "db-q35",
+    "question": "What is a Stored Procedure?",
+    "keywords": ["stored procedure", "sql", "reusable"],
+    "ideal": "A stored procedure is a reusable SQL program stored in the database."
+},
+{
+    "id": "db-q36",
+    "question": "Difference between Procedure and Function.",
+    "keywords": ["procedure", "function", "return value"],
+    "ideal": "Functions return values; procedures may or may not return values."
+},
+{
+    "id": "db-q37",
+    "question": "What is Concurrency Control?",
+    "keywords": ["concurrency", "transaction", "consistency"],
+    "ideal": "Concurrency control manages simultaneous transactions safely."
+},
+{
+    "id": "db-q38",
+    "question": "What is Locking in DBMS?",
+    "keywords": ["locking", "transaction", "resource"],
+    "ideal": "Locking prevents conflicts when multiple transactions access data."
+},
+{
+    "id": "db-q39",
+    "question": "Explain Shared and Exclusive Locks.",
+    "keywords": ["shared lock", "exclusive lock", "read", "write"],
+    "ideal": "Shared locks allow reads; exclusive locks allow writes."
+},
+{
+    "id": "db-q40",
+    "question": "What is Deadlock in DBMS?",
+    "keywords": ["deadlock", "waiting", "resource"],
+    "ideal": "Deadlock occurs when transactions wait indefinitely for resources."
+},
+{
+    "id": "db-q41",
+    "question": "How can Deadlocks be prevented?",
+    "keywords": ["deadlock prevention", "resource ordering"],
+    "ideal": "Deadlocks can be prevented using ordering, detection and avoidance techniques."
+},
+{
+    "id": "db-q42",
+    "question": "What is Two Phase Locking?",
+    "keywords": ["2pl", "two phase locking", "growing", "shrinking"],
+    "ideal": "2PL uses growing and shrinking phases to ensure serializability."
+},
+{
+    "id": "db-q43",
+    "question": "What is a Checkpoint in DBMS?",
+    "keywords": ["checkpoint", "recovery", "log"],
+    "ideal": "A checkpoint saves database state to simplify recovery."
+},
+{
+    "id": "db-q44",
+    "question": "What is Database Recovery?",
+    "keywords": ["recovery", "crash", "restore"],
+    "ideal": "Recovery restores the database after failures."
+},
+{
+    "id": "db-q45",
+    "question": "Explain Commit and Rollback.",
+    "keywords": ["commit", "rollback", "transaction"],
+    "ideal": "Commit saves changes; rollback undoes changes."
+},
+{
+    "id": "db-q46",
+    "question": "What is Query Optimization?",
+    "keywords": ["query optimization", "performance", "execution plan"],
+    "ideal": "Query optimization selects the most efficient way to execute queries."
+},
+{
+    "id": "db-q47",
+    "question": "What is Denormalization?",
+    "keywords": ["denormalization", "performance", "redundancy"],
+    "ideal": "Denormalization adds redundancy to improve read performance."
+},
+{
+    "id": "db-q48",
+    "question": "Difference between OLTP and OLAP.",
+    "keywords": ["oltp", "olap", "transaction", "analytics"],
+    "ideal": "OLTP handles transactions; OLAP handles analytics."
+},
+{
+    "id": "db-q49",
+    "question": "What is Data Warehousing?",
+    "keywords": ["data warehouse", "analytics", "historical data"],
+    "ideal": "A data warehouse stores integrated historical data for analysis."
+},
+{
+    "id": "db-q50",
+    "question": "What is Database Sharding?",
+    "keywords": ["sharding", "partitioning", "scalability"],
+    "ideal": "Sharding splits data across multiple databases for scalability."
+}
     ],
     "OS": [
         {
