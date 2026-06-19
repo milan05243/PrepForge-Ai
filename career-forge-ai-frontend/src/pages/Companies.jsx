@@ -90,7 +90,62 @@ const COMPANIES = [
     process: "Online Test (120 mins, DBMS, OS, CN MCQs, and 2 Coding) -> 2 Technical rounds (SQL queries, system design, coding) -> HR round.",
     rounds: "1 OA, 2 Technical, 1 HR",
     roadmap: "Complex SQL Joins/Subqueries, Transaction concurrency, Operating Systems scheduling, memory maps."
-  }
+  },
+  {
+  id: "adobe",
+  name: "Adobe",
+  logoText: "A",
+  color: "bg-red-600",
+  desc: "Global software giant known for products like Photoshop, Acrobat, and Creative Cloud. Strong emphasis on problem-solving and core CS fundamentals.",
+  eligibility: "7.0+ CGPA preferred. Usually open for CSE, IT, ECE. No active backlogs. Strong DSA skills expected.",
+  process: "Online Assessment (DSA + MCQs) -> 2 Technical Interviews (DSA, DBMS, OS, OOPs) -> Hiring Manager Round -> HR Discussion.",
+  rounds: "1 OA, 2 Technical, 1 Hiring Manager, 1 HR",
+  roadmap: "Arrays, Trees, Graphs, Dynamic Programming, DBMS normalization, OOP concepts, Operating Systems."
+},
+{
+  id: "atlassian",
+  name: "Atlassian",
+  logoText: "At",
+  color: "bg-blue-700",
+  desc: "Australian software company known for Jira, Trello, and Confluence. Focuses heavily on coding and low-level design.",
+  eligibility: "7.0+ CGPA. Primarily CS/IT students. No active backlogs. Strong coding profile preferred.",
+  process: "Online Coding Assessment -> 2-3 Technical Interviews (DSA + LLD) -> Behavioral Round.",
+  rounds: "1 OA, 3 Technical, 1 Behavioral",
+  roadmap: "Graphs, Dynamic Programming, Hashing, Low-Level Design, OOP principles, concurrency basics."
+},
+{
+  id: "walmart",
+  name: "Walmart Global Tech",
+  logoText: "W",
+  color: "bg-sky-600",
+  desc: "Technology arm of Walmart focusing on scalable retail systems and cloud infrastructure.",
+  eligibility: "6.5+ CGPA. CSE, IT, ECE preferred. No active backlogs.",
+  process: "Online Assessment -> 2 Technical Interviews (DSA + CS fundamentals) -> Managerial Round.",
+  rounds: "1 OA, 2 Technical, 1 Managerial",
+  roadmap: "Trees, Graphs, Sliding Window, Heaps, DBMS transactions, OS scheduling, System Design basics."
+},
+{
+  id: "goldman",
+  name: "Goldman Sachs",
+  logoText: "GS",
+  color: "bg-yellow-700",
+  desc: "Leading global investment bank recruiting engineers for technology and quantitative roles.",
+  eligibility: "7.0+ CGPA. Open to CS, IT, ECE, Mathematics and allied branches. No active backlogs.",
+  process: "Hackerrank Assessment -> Technical Interview (DSA, CS Fundamentals) -> Behavioral + Hiring Manager Round.",
+  rounds: "1 OA, 2 Technical, 1 Behavioral",
+  roadmap: "Arrays, Strings, DP, Probability, SQL queries, Operating Systems, Networking fundamentals."
+},
+{
+  id: "nvidia",
+  name: "NVIDIA",
+  logoText: "N",
+  color: "bg-green-600",
+  desc: "Leader in GPUs, AI hardware, and accelerated computing. Strong focus on C++, OS, and problem-solving.",
+  eligibility: "7.5+ CGPA preferred. CSE, IT, ECE, Electrical branches. No active backlogs.",
+  process: "Online Assessment -> 2-3 Technical Interviews (C++, OS, DSA) -> Managerial/HR Round.",
+  rounds: "1 OA, 3 Technical, 1 HR",
+  roadmap: "Advanced C++, Memory Management, OS internals, Multithreading, Trees, Graphs, Dynamic Programming."
+}
 ];
 
 export default function Companies() {
