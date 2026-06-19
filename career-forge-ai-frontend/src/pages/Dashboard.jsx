@@ -102,18 +102,7 @@ export default function Dashboard({ apiBase, authHeaders }) {
           </CardBody>
         </Card>
 
-        <Card>
-          <CardBody className="flex items-center gap-5">
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <Briefcase className="h-7 w-7" />
-            </div>
-            <div>
-              <div className="text-3xl font-black text-white">{stats.appliedJobs}</div>
-              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Mock Jobs Applied</div>
-            </div>
-          </CardBody>
-        </Card>
-
+        
         <Card>
           <CardBody className="flex items-center gap-5">
             <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
