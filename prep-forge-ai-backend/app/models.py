@@ -12,6 +12,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     profile_picture = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    current_streak = Column(Integer, default=0)
+    last_active_date = Column(DateTime, nullable=True)
     
     applications = relationship("Application", back_populates="user")
     quiz_scores = relationship("QuizScore", back_populates="user")

@@ -41,6 +41,17 @@ def run_sqlite_migrations():
         cols = [c[1] for c in cursor.fetchall()]
         if "user_id" not in cols:
             cursor.execute("ALTER TABLE interview_sessions ADD COLUMN user_id INTEGER REFERENCES users(id)")
+            # Check and add streak columns to users table
+        cursor.execute("PRAGMA table_info(users)")
+        cols = [c[1] for c in cursor.fetchall()]
+
+        if "current_streak" not in cols:
+            cursor.execute("ALTER TABLE users ADD COLUMN current_streak INTEGER DEFAULT 0")
+        if "last_active_date" not in cols:
+            cursor.execute("ALTER TABLE users ADD COLUMN last_active_date DATETIME")
+
+
+
             
         conn.commit()
         conn.close()
@@ -102,6 +113,34 @@ def get_current_user(db: Session):
     except ValueError:
         # Fallback to check by sub/google_id directly if header contains it
         return db.query(models.User).filter(models.User.google_id == user_id_str).first()
+    from datetime import timedelta
+
+def update_user_streak(user, db):
+    today = datetime.utcnow().date()
+
+    # First activity ever
+    if not user.last_active_date:
+        user.current_streak = 1
+        user.last_active_date = datetime.utcnow()
+        db.commit()
+        return
+
+    last_date = user.last_active_date.date()
+
+    # Already active today → don't increase streak
+    if last_date == today:
+        return
+
+    # User was active yesterday → increase streak
+    if last_date == today - timedelta(days=1):
+        user.current_streak += 1
+
+    # Missed one or more days → reset streak
+    else:
+        user.current_streak = 1
+
+    user.last_active_date = datetime.utcnow()
+    db.commit()
 
 @app.route("/", methods=["GET"])
 def root():
@@ -391,6 +430,22 @@ def update_application_status(app_id):
     finally:
         db.close()
 
+@app.route("/api/streak", methods=["GET"])
+def get_streak():
+    db = get_db()
+    try:
+        user = get_current_user(db)
+
+        if not user:
+            return jsonify({"detail": "Not authenticated"}), 401
+
+        return jsonify({
+            "streak": user.current_streak or 0
+        })
+
+    finally:
+        db.close()
+
 # ----------------------------------------------------
 # DSA TRACKER ENDPOINTS (WITH USER PROGRESS)
 # ----------------------------------------------------
@@ -461,6 +516,7 @@ def update_dsa_problem(problem_id):
                 prog.notes = data.get("notes")
                 
         db.commit()
+        update_user_streak(user, db)
         return jsonify({
             "id": problem.id,
             "title": problem.title,
@@ -511,6 +567,7 @@ def manage_quiz():
             db.add(entry)
             db.commit()
             db.refresh(entry)
+            update_user_streak(user, db)
             return jsonify({
                 "id": entry.id,
                 "category": entry.category,
@@ -557,6 +614,7 @@ def analyze_resume():
         
         db.add(analysis)
         db.commit()
+        update_user_streak(user, db)
         
         return jsonify(results)
     finally:
@@ -661,6 +719,7 @@ def submit_interview_answer():
         session.score = eval_res["score"]
         session.feedback = eval_res["feedback"]
         db.commit()
+        update_user_streak(user, db)
         
         return jsonify({
             "session_id": session.id,
