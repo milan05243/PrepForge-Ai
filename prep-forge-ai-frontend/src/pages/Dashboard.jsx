@@ -84,15 +84,15 @@ const [dsaRes, quizRes, interviewRes, resumeRes, streakRes] =
           : 0;
 
         setStats({
-          dsaDone,
-          dsaTotal,
-          dsaPercent,
-          quizAccuracy,
-          quizTotal: totalQuiz,
-          interviews: interviewData.length,
-          resumes: resumeData.length,
-        streak: streakRaw.streak || 0
-        });
+  dsaDone,
+  dsaTotal,
+  dsaPercent,
+  quizAccuracy,
+  quizTotal: totalQuiz,
+  interviews: interviewData.length,
+  resumes: resumeData.length,
+  streak: streakData.streak || 0
+});
       } catch (err) {
         console.error('Failed to fetch dashboard stats', err);
       } finally {
