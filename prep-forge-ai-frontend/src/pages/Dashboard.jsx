@@ -30,26 +30,31 @@ export default function Dashboard({ apiBase, authHeaders }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [dsaRes, quizRes, interviewRes, resumeRes] =
-          await Promise.all([
-            fetch(`${apiBase}/api/dsa`, {
-              headers: { ...authHeaders }
-            }),
-            fetch(`${apiBase}/api/quiz`, {
-              headers: { ...authHeaders }
-            }),
-            fetch(`${apiBase}/api/ai/interview/history`, {
-              headers: { ...authHeaders }
-            }),
-            fetch(`${apiBase}/api/ai/resume-analyzer/history`, {
-              headers: { ...authHeaders }
-            })
-          ]);
+const [dsaRes, quizRes, interviewRes, resumeRes, streakRes] =
+  await Promise.all([
+    fetch(`${apiBase}/api/dsa`, {
+      headers: { ...authHeaders }
+    }),
+    fetch(`${apiBase}/api/quiz`, {
+      headers: { ...authHeaders }
+    }),
+    fetch(`${apiBase}/api/ai/interview/history`, {
+      headers: { ...authHeaders }
+    }),
+    fetch(`${apiBase}/api/ai/resume-analyzer/history`, {
+      headers: { ...authHeaders }
+    }),
+    fetch(`${apiBase}/api/streak`, {
+      headers: { ...authHeaders }
+    })
+  ]);
+          
 
         const dsaRaw = await dsaRes.json();
         const quizRaw = await quizRes.json();
         const interviewRaw = await interviewRes.json();
         const resumeRaw = await resumeRes.json();
+        const streakRaw = await streakRes.json();
 
         const dsaData = Array.isArray(dsaRaw) ? dsaRaw : [];
         const quizData = Array.isArray(quizRaw) ? quizRaw : [];
@@ -86,10 +91,7 @@ export default function Dashboard({ apiBase, authHeaders }) {
           quizTotal: totalQuiz,
           interviews: interviewData.length,
           resumes: resumeData.length,
-          streak: Math.min(
-            dsaDone + interviewData.length + totalQuiz,
-            30
-          )
+        streak: streakRaw.streak || 0
         });
       } catch (err) {
         console.error('Failed to fetch dashboard stats', err);
