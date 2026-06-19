@@ -145,6 +145,61 @@ const COMPANIES = [
   process: "Online Assessment -> 2-3 Technical Interviews (C++, OS, DSA) -> Managerial/HR Round.",
   rounds: "1 OA, 3 Technical, 1 HR",
   roadmap: "Advanced C++, Memory Management, OS internals, Multithreading, Trees, Graphs, Dynamic Programming."
+},
+{
+  id: "paypal",
+  name: "PayPal",
+  logoText: "P",
+  color: "bg-blue-800",
+  desc: "Global online payments platform focusing on secure financial transactions and scalable systems.",
+  eligibility: "7.0+ CGPA preferred. Open to CSE, IT, ECE. No active backlogs allowed.",
+  process: "Online Assessment (Coding + MCQs) -> 2 Technical Interviews (DSA, OOPs, DBMS) -> Hiring Manager Round -> HR Discussion.",
+  rounds: "1 OA, 2 Technical, 1 Hiring Manager, 1 HR",
+  roadmap: "Arrays, Strings, Hashing, Trees, OOP principles, DBMS indexing, Operating Systems basics."
+},
+{
+  id: "uber",
+  name: "Uber",
+  logoText: "U",
+  color: "bg-black",
+  desc: "Global ride-sharing and mobility technology company known for large-scale distributed systems.",
+  eligibility: "7.0+ CGPA. Primarily CS/IT branches. No active backlogs. Strong DSA profile expected.",
+  process: "Online Coding Test -> 2-3 Technical Interviews (DSA + System Design) -> Behavioral Round.",
+  rounds: "1 OA, 3 Technical, 1 Behavioral",
+  roadmap: "Graphs, Dynamic Programming, Trees, Low-Level Design, System Design fundamentals, scalability concepts."
+},
+{
+  id: "cisco",
+  name: "Cisco",
+  logoText: "C",
+  color: "bg-cyan-600",
+  desc: "Networking and cybersecurity giant with strong focus on computer networks and software engineering.",
+  eligibility: "6.5+ CGPA. Open to CSE, IT, ECE, EEE. No active backlogs.",
+  process: "Online Assessment (Coding + Networking MCQs) -> 2 Technical Interviews -> HR Round.",
+  rounds: "1 OA, 2 Technical, 1 HR",
+  roadmap: "Computer Networks, OSI model, TCP/IP, DSA fundamentals, OOP concepts, DBMS basics."
+},
+{
+  id: "sap",
+  name: "SAP",
+  logoText: "S",
+  color: "bg-sky-500",
+  desc: "Enterprise software leader specializing in ERP solutions, cloud computing, and business applications.",
+  eligibility: "6.5+ CGPA. Open to CSE, IT, ECE. No active backlogs preferred.",
+  process: "Online Test (Coding + MCQs) -> 2 Technical Interviews -> HR Discussion.",
+  rounds: "1 OA, 2 Technical, 1 HR",
+  roadmap: "Java/OOP concepts, SQL queries, DBMS transactions, Data Structures, Problem Solving."
+},
+{
+  id: "qualcomm",
+  name: "Qualcomm",
+  logoText: "Q",
+  color: "bg-indigo-700",
+  desc: "Semiconductor and telecommunications company focusing on wireless technologies and embedded systems.",
+  eligibility: "7.0+ CGPA preferred. Open to CSE, IT, ECE, Electrical branches. No active backlogs.",
+  process: "Online Assessment -> 2-3 Technical Interviews (C++, OS, CN, DSA) -> HR Round.",
+  rounds: "1 OA, 3 Technical, 1 HR",
+  roadmap: "Advanced C++, Operating Systems, Computer Networks, Memory Management, Trees and Graph algorithms."
 }
 ];
 
