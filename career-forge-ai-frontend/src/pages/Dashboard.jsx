@@ -1,53 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardBody } from '../components/Card';
 import { DashboardSkeleton } from '../components/Skeletons';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { Briefcase, CheckCircle, Code, Cpu, Award } from 'lucide-react';
+import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Code, Cpu, Award, Flame, Trophy, Mic, FileText } from 'lucide-react';
 
 export default function Dashboard({ apiBase, authHeaders }) {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    dsaDone: 0,
-    dsaTotal: 0,
-    dsaPercent: 0,
-    appliedJobs: 0,
-    quizAccuracy: 0,
-    quizTotal: 0,
-    appStages: []
-  });
+  dsaDone: 0,
+  dsaTotal: 0,
+  dsaPercent: 0,
+  quizAccuracy: 0,
+  quizTotal: 0,
+  interviews: 0,
+  resumes: 0,
+  streak: 0
+});
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [dsaRes, appRes, quizRes] = await Promise.all([
-          fetch(`${apiBase}/api/dsa`, { headers: { ...authHeaders } }),
-          fetch(`${apiBase}/api/applications`, { headers: { ...authHeaders } }),
-          fetch(`${apiBase}/api/quiz`, { headers: { ...authHeaders } })
-        ]);
+        const [dsaRes, quizRes, interviewRes, resumeRes] = await Promise.all([
+  fetch(`${apiBase}/api/dsa`, { headers: { ...authHeaders } }),
+  fetch(`${apiBase}/api/quiz`, { headers: { ...authHeaders } }),
+  fetch(`${apiBase}/api/ai/interview/history`, { headers: { ...authHeaders } }),
+  fetch(`${apiBase}/api/ai/resume-analyzer/history`, { headers: { ...authHeaders } })
+]);
 
         const dsaData = await dsaRes.json();
-        const appData = await appRes.json();
         const quizData = await quizRes.json();
+        const interviewData = await interviewRes.json();
+        const resumeData = await resumeRes.json();
 
         // Calculate DSA Stats
         const dsaTotal = dsaData.length;
         const dsaDone = dsaData.filter(p => p.completed).length;
         const dsaPercent = dsaTotal ? Math.round((dsaDone / dsaTotal) * 100) : 0;
 
-        // Calculate Application Stages
-        const stages = { Applied: 0, Shortlisted: 0, Interviewing: 0, Offer: 0 };
-        appData.forEach(app => {
-          if (stages[app.status] !== undefined) {
-            stages[app.status]++;
-          }
-        });
-
-        const appStages = Object.keys(stages).map(key => ({
-          name: key,
-          count: stages[key]
-        }));
-
-        // Calculate Quiz Accuracy
+       // Calculate Quiz Accuracy
         let totalQuiz = 0;
         let correctQuiz = 0;
         quizData.forEach(q => {
@@ -57,14 +47,20 @@ export default function Dashboard({ apiBase, authHeaders }) {
         const quizAccuracy = totalQuiz ? Math.round((correctQuiz / totalQuiz) * 100) : 0;
 
         setStats({
-          dsaDone,
-          dsaTotal,
-          dsaPercent,
-          appliedJobs: appData.length,
-          quizAccuracy,
-          quizTotal: totalQuiz,
-          appStages
-        });
+  dsaDone,
+  dsaTotal,
+  dsaPercent,
+  quizAccuracy,
+  quizTotal: totalQuiz,
+  interviews: interviewData.length,
+  resumes: resumeData.length,
+  streak: Math.min(
+    dsaDone +
+    interviewData.length +
+    totalQuiz,
+    30
+  )
+});
       } catch (err) {
         console.error("Failed to fetch dashboard stats", err);
       } finally {
@@ -93,7 +89,7 @@ export default function Dashboard({ apiBase, authHeaders }) {
       </div>
 
       {/* Highlights Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <Card>
           <CardBody className="flex items-center gap-5">
             <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
@@ -133,35 +129,44 @@ export default function Dashboard({ apiBase, authHeaders }) {
 
       {/* Analytics Visual Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Job Applications Chart */}
-        <Card hoverEffect={false}>
-          <CardHeader>
-            <CardTitle>Job Applications Pipeline</CardTitle>
-          </CardHeader>
-          <CardBody className="h-80">
-            {stats.appliedJobs === 0 ? (
-              <div className="h-full flex items-center justify-center text-slate-500 text-sm">
-                No active applications. Visit the Job Portal to apply.
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.appStages} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#64748b" fontSize={12} tickLine={false} allowDecimals={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0d1326', borderColor: 'rgba(255,255,255,0.08)', borderRadius: 8 }}
-                    labelStyle={{ color: '#fff', fontWeight: 600 }}
-                  />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {stats.appStages.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardBody>
-        </Card>
+       {/* Achievements Card */}
+<Card hoverEffect={false}>
+  <CardHeader>
+    <CardTitle>Achievements & Milestones</CardTitle>
+  </CardHeader>
+
+  <CardBody className="space-y-4 text-sm">
+    <div className="flex items-center gap-3 text-amber-300">
+      <Trophy className="h-5 w-5" />
+      <span>🏆 First Quiz Completed</span>
+    </div>
+
+    <div className="flex items-center gap-3 text-emerald-300">
+      <Flame className="h-5 w-5" />
+      <span>🔥 Started Mock Interview Practice</span>
+    </div>
+
+    <div className="flex items-center gap-3 text-indigo-300">
+      <Code className="h-5 w-5" />
+      <span>💻 DSA Journey Started</span>
+    </div>
+
+    <div className="flex items-center gap-3 text-sky-300">
+      <Award className="h-5 w-5" />
+      <span>🚀 Welcome to PrepForge AI</span>
+    </div>
+
+    <div className="flex items-center gap-3 text-purple-300">
+      <Mic className="h-5 w-5" />
+      <span>🎤 Complete 5 Mock Interviews</span>
+    </div>
+
+    <div className="flex items-center gap-3 text-orange-300">
+      <FileText className="h-5 w-5" />
+      <span>📄 Analyze Your First Resume</span>
+    </div>
+  </CardBody>
+</Card>
 
         {/* DSA Progress Donut Chart */}
         <Card hoverEffect={false}>
@@ -207,6 +212,45 @@ export default function Dashboard({ apiBase, authHeaders }) {
             </div>
           </CardBody>
         </Card>
+        <Card>
+  <CardBody className="flex items-center gap-5">
+    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+      <Mic className="h-7 w-7" />
+    </div>
+    <div>
+      <div className="text-3xl font-black text-white">{stats.interviews}</div>
+      <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+        Mock Interviews
+      </div>
+    </div>
+  </CardBody>
+</Card>
+<Card>
+  <CardBody className="flex items-center gap-5">
+    <div className="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+      <FileText className="h-7 w-7" />
+    </div>
+    <div>
+      <div className="text-3xl font-black text-white">{stats.resumes}</div>
+      <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+        Resume Analyses
+      </div>
+    </div>
+  </CardBody>
+</Card>
+<Card>
+  <CardBody className="flex items-center gap-5">
+    <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400">
+      <Flame className="h-7 w-7" />
+    </div>
+    <div>
+      <div className="text-3xl font-black text-white">{stats.streak}</div>
+      <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+        Daily Streak
+      </div>
+    </div>
+  </CardBody>
+</Card>
       </div>
     </div>
   );
