@@ -79,7 +79,70 @@ const PREP_DATA = {
       { topic: "Process vs Thread", details: "Processes are independent address spaces with their own memory. Threads are execution contexts within a process sharing its memory space." }
     ],
     quizzes: [
-      { id: "os-q1", question: "Which of the following is NOT a necessary condition for deadlock?", options: ["Hold and Wait", "No Preemption", "Circular Wait", "Preemption"], correct: 3, explanation: "The four deadlock conditions are Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait. Preemption breaks deadlocks." }
+      { id: "os-q1", question: "Which of the following is NOT a necessary condition for deadlock?", options: ["Hold and Wait", "No Preemption", "Circular Wait", "Preemption"], correct: 3, explanation: "The four deadlock conditions are Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait. Preemption breaks deadlocks." },
+      {
+  id: "os-q2",
+  question: "Which scheduling algorithm may cause starvation?",
+  options: ["FCFS", "Round Robin", "SJF", "FIFO"],
+  correct: 2,
+  explanation: "Shortest Job First (SJF) may cause starvation for longer processes."
+},
+{
+  id: "os-q3",
+  question: "Which memory management technique eliminates external fragmentation?",
+  options: ["Segmentation", "Paging", "Swapping", "Compaction"],
+  correct: 1,
+  explanation: "Paging divides memory into fixed-size frames, eliminating external fragmentation."
+},
+{
+  id: "os-q4",
+  question: "What is a deadlock?",
+  options: ["Process termination", "Infinite execution", "Processes waiting indefinitely for resources", "Memory overflow"],
+  correct: 2,
+  explanation: "Deadlock occurs when processes wait indefinitely for resources held by each other."
+},
+{
+  id: "os-q5",
+  question: "Which system call creates a new process in Unix?",
+  options: ["create()", "fork()", "spawn()", "new()"],
+  correct: 1,
+  explanation: "fork() creates a new child process in Unix/Linux systems."
+},
+{
+  id: "os-q6",
+  question: "Which scheduling algorithm is preemptive?",
+  options: ["FCFS", "SJF", "Round Robin", "FIFO"],
+  correct: 2,
+  explanation: "Round Robin is a preemptive scheduling algorithm."
+},
+{
+  id: "os-q7",
+  question: "What is the purpose of a semaphore?",
+  options: ["Memory allocation", "Process synchronization", "File management", "CPU scheduling"],
+  correct: 1,
+  explanation: "Semaphores are used for process synchronization."
+},
+{
+  id: "os-q8",
+  question: "Which of the following is not a process state?",
+  options: ["Ready", "Running", "Waiting", "Compiled"],
+  correct: 3,
+  explanation: "Compiled is not a process state."
+},
+{
+  id: "os-q9",
+  question: "Thrashing occurs when:",
+  options: ["CPU utilization is high", "Excessive paging occurs", "Processes terminate", "Memory is free"],
+  correct: 1,
+  explanation: "Thrashing occurs when excessive paging reduces system performance."
+},
+{
+  id: "os-q10",
+  question: "Which page replacement algorithm replaces the oldest page?",
+  options: ["LRU", "FIFO", "Optimal", "LFU"],
+  correct: 1,
+  explanation: "FIFO replaces the page that entered memory first."
+}
     ]
   },
   cn: {
@@ -89,7 +152,70 @@ const PREP_DATA = {
       { topic: "OSI Layers", details: "Physical, Data Link, Network (IP), Transport (TCP/UDP), Session, Presentation, Application (HTTP)." }
     ],
     quizzes: [
-      { id: "cn-q1", question: "At which layer of the OSI model does TCP protocol operate?", options: ["Network Layer", "Transport Layer", "Application Layer", "Data Link Layer"], correct: 1, explanation: "TCP (Transmission Control Protocol) and UDP operate at the Transport Layer of the OSI model." }
+      { id: "cn-q1", question: "At which layer of the OSI model does TCP protocol operate?", options: ["Network Layer", "Transport Layer", "Application Layer", "Data Link Layer"], correct: 1, explanation: "TCP (Transmission Control Protocol) and UDP operate at the Transport Layer of the OSI model." },
+      {
+  id: "cn-q2",
+  question: "Which protocol is used to transfer web pages?",
+  options: ["FTP", "HTTP", "SMTP", "DNS"],
+  correct: 1,
+  explanation: "HTTP is used for transferring web pages."
+},
+{
+  id: "cn-q3",
+  question: "Which device operates at the Network layer?",
+  options: ["Hub", "Switch", "Router", "Repeater"],
+  correct: 2,
+  explanation: "Routers operate at the Network layer."
+},
+{
+  id: "cn-q4",
+  question: "What is the full form of DNS?",
+  options: ["Domain Name System", "Data Network Service", "Digital Naming System", "Domain Network Service"],
+  correct: 0,
+  explanation: "DNS stands for Domain Name System."
+},
+{
+  id: "cn-q5",
+  question: "Which protocol is connectionless?",
+  options: ["TCP", "UDP", "HTTP", "FTP"],
+  correct: 1,
+  explanation: "UDP is connectionless and does not guarantee delivery."
+},
+{
+  id: "cn-q6",
+  question: "Which layer is responsible for routing?",
+  options: ["Transport", "Network", "Data Link", "Application"],
+  correct: 1,
+  explanation: "The Network layer handles routing."
+},
+{
+  id: "cn-q7",
+  question: "Which topology uses a central hub?",
+  options: ["Bus", "Ring", "Star", "Mesh"],
+  correct: 2,
+  explanation: "Star topology uses a central hub or switch."
+},
+{
+  id: "cn-q8",
+  question: "What is the default port number of HTTP?",
+  options: ["21", "25", "80", "443"],
+  correct: 2,
+  explanation: "HTTP uses port 80 by default."
+},
+{
+  id: "cn-q9",
+  question: "Which protocol is used for email transfer?",
+  options: ["SMTP", "FTP", "HTTP", "DNS"],
+  correct: 0,
+  explanation: "SMTP is used for sending emails."
+},
+{
+  id: "cn-q10",
+  question: "Which OSI layer handles encryption?",
+  options: ["Session", "Presentation", "Transport", "Application"],
+  correct: 1,
+  explanation: "The Presentation layer handles encryption and compression."
+}
     ]
   },
   oops: {
@@ -99,7 +225,70 @@ const PREP_DATA = {
       { topic: "Abstraction", details: "Hiding implementation details and exposing only interfaces (using abstract classes/interfaces)." }
     ],
     quizzes: [
-      { id: "oop-q1", question: "What is Runtime Polymorphism achieved through?", options: ["Method Overloading", "Method Overriding", "Encapsulation", "Multiple Inheritance"], correct: 1, explanation: "Method Overriding allows a subclass to provide a specific implementation of a method already defined in its parent, supporting runtime polymorphism." }
+      { id: "oop-q1", question: "What is Runtime Polymorphism achieved through?", options: ["Method Overloading", "Method Overriding", "Encapsulation", "Multiple Inheritance"], correct: 1, explanation: "Method Overriding allows a subclass to provide a specific implementation of a method already defined in its parent, supporting runtime polymorphism." },
+      {
+  id: "oop-q2",
+  question: "Which OOP concept binds data and methods together?",
+  options: ["Inheritance", "Encapsulation", "Polymorphism", "Abstraction"],
+  correct: 1,
+  explanation: "Encapsulation binds data and methods into a single unit."
+},
+{
+  id: "oop-q3",
+  question: "Which feature allows code reusability?",
+  options: ["Inheritance", "Abstraction", "Polymorphism", "Encapsulation"],
+  correct: 0,
+  explanation: "Inheritance promotes code reusability."
+},
+{
+  id: "oop-q4",
+  question: "Which keyword is used to inherit a class in Java?",
+  options: ["extends", "implements", "inherits", "super"],
+  correct: 0,
+  explanation: "The extends keyword is used for inheritance in Java."
+},
+{
+  id: "oop-q5",
+  question: "What is compile-time polymorphism achieved through?",
+  options: ["Method Overloading", "Method Overriding", "Inheritance", "Abstraction"],
+  correct: 0,
+  explanation: "Method overloading supports compile-time polymorphism."
+},
+{
+  id: "oop-q6",
+  question: "Which OOP principle hides implementation details?",
+  options: ["Encapsulation", "Abstraction", "Inheritance", "Polymorphism"],
+  correct: 1,
+  explanation: "Abstraction hides implementation details."
+},
+{
+  id: "oop-q7",
+  question: "Which access modifier provides maximum accessibility?",
+  options: ["private", "protected", "public", "default"],
+  correct: 2,
+  explanation: "Public members can be accessed from anywhere."
+},
+{
+  id: "oop-q8",
+  question: "What is an object?",
+  options: ["Blueprint", "Class instance", "Function", "Variable"],
+  correct: 1,
+  explanation: "An object is an instance of a class."
+},
+{
+  id: "oop-q9",
+  question: "Which keyword refers to the current object in Java?",
+  options: ["super", "self", "this", "current"],
+  correct: 2,
+  explanation: "this refers to the current object."
+},
+{
+  id: "oop-q10",
+  question: "Which concept allows one interface with multiple implementations?",
+  options: ["Inheritance", "Polymorphism", "Encapsulation", "Abstraction"],
+  correct: 1,
+  explanation: "Polymorphism allows multiple implementations through a common interface."
+}
     ]
   }
 };
