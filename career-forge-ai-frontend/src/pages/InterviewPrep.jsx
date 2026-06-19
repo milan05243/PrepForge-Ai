@@ -12,7 +12,63 @@ const PREP_DATA = {
     ],
     quizzes: [
       { id: "db-q1", question: "Which normal form deals with removing partial dependencies?", options: ["1NF", "2NF", "3NF", "BCNF"], correct: 1, explanation: "A relation is in 2NF if it is in 1NF and every non-prime attribute is fully functionally dependent on the primary key, removing partial dependencies." },
-      { id: "db-q2", question: "What does Isolation guarantee in ACID transactions?", options: ["Permanency of committed changes", "Concurrent transactions run without interference", "Integrity of states", "All actions succeed or fail together"], correct: 1, explanation: "Isolation ensures that the execution of concurrent transactions does not lead to inconsistent states, simulating sequential execution." }
+      { id: "db-q2", question: "What does Isolation guarantee in ACID transactions?", options: ["Permanency of committed changes", "Concurrent transactions run without interference", "Integrity of states", "All actions succeed or fail together"], correct: 1, explanation: "Isolation ensures that the execution of concurrent transactions does not lead to inconsistent states, simulating sequential execution." },
+      {
+  id: "db-q3",
+  question: "Which SQL command is used to remove all records from a table but keep the table structure?",
+  options: ["DELETE", "DROP", "TRUNCATE", "REMOVE"],
+  correct: 2,
+  explanation: "TRUNCATE removes all rows from a table while preserving the table structure."
+},
+{
+  id: "db-q4",
+  question: "Which key uniquely identifies a record in a relation?",
+  options: ["Foreign Key", "Candidate Key", "Primary Key", "Composite Key"],
+  correct: 2,
+  explanation: "A Primary Key uniquely identifies each tuple (record) in a relation."
+},
+{
+  id: "db-q5",
+  question: "Which normal form eliminates transitive dependency?",
+  options: ["1NF", "2NF", "3NF", "BCNF"],
+  correct: 2,
+  explanation: "Third Normal Form (3NF) removes transitive dependencies."
+},
+{
+  id: "db-q6",
+  question: "What does SQL stand for?",
+  options: ["Structured Query Language", "Simple Query Language", "Sequential Query Language", "System Query Language"],
+  correct: 0,
+  explanation: "SQL stands for Structured Query Language."
+},
+{
+  id: "db-q7",
+  question: "Which join returns all rows when there is a match in either table?",
+  options: ["Inner Join", "Left Join", "Right Join", "Full Outer Join"],
+  correct: 3,
+  explanation: "FULL OUTER JOIN returns all rows from both tables and fills unmatched values with NULL."
+},
+{
+  id: "db-q8",
+  question: "Which indexing structure is commonly used in databases?",
+  options: ["B-Tree", "AVL Tree", "Heap", "Trie"],
+  correct: 0,
+  explanation: "B-Tree indexes are widely used because they support efficient insertion, deletion, and search."
+},
+{
+  id: "db-q9",
+  question: "Which ACID property ensures committed transactions survive system failures?",
+  options: ["Atomicity", "Consistency", "Isolation", "Durability"],
+  correct: 3,
+  explanation: "Durability guarantees that committed transactions are permanently stored."
+},
+{
+  id: "db-q10",
+  question: "Which SQL clause is used to filter groups?",
+  options: ["WHERE", "HAVING", "GROUP BY", "ORDER BY"],
+  correct: 1,
+  explanation: "HAVING filters groups created using GROUP BY."
+}
     ]
   },
   os: {
