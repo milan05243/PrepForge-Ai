@@ -63,7 +63,7 @@ window.google.accounts.id.renderButton(
       }
 
       const userData = await res.json();
-      triggerToast("Welcome back to CareerForge AI!", "success");
+      triggerToast("Welcome back to PrepForge AI!", "success");
       onLoginSuccess(userData);
     } catch (err) {
       setError(err.message || "Failed to log in with Google. Please try again.");
@@ -116,7 +116,7 @@ window.google.accounts.id.renderButton(
               <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-600/30">
                 C
               </div>
-              <span>CareerForge <span className="text-indigo-400 font-extrabold text-sm uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 ml-1">AI</span></span>
+              <span>PrepForge <span className="text-indigo-400 font-extrabold text-sm uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 ml-1">AI</span></span>
             </div>
 
             <h1 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight">
@@ -124,7 +124,7 @@ window.google.accounts.id.renderButton(
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent">Placement Success</span>
             </h1>
             <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-              CareerForge AI is an advanced preparation suite designed to accelerate your technical placement potential. Analyze your resume, practice coding in a Monaco environment, and run mock interviews locally.
+              PrepForge AI is an advanced preparation suite designed to accelerate your technical placement potential. Analyze your resume, practice coding in a Monaco environment, and run mock interviews locally.
             </p>
           </div>
 
@@ -160,7 +160,7 @@ window.google.accounts.id.renderButton(
           </div>
 
           <div className="text-slate-500 text-xs font-semibold">
-            &copy; 2026 CareerForge AI. Enterprise Placement Accelerator.
+            &copy; 2026 PrepForge AI. Enterprise Placement Accelerator.
           </div>
         </div>
 
