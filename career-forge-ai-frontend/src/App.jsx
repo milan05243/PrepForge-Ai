@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import ResumeAnalyzer from './pages/ResumeAnalyzer';
-import Jobs from './pages/Jobs';
 import InterviewPrep from './pages/InterviewPrep';
 import InterviewSimulator from './pages/InterviewSimulator';
 import Companies from './pages/Companies';
@@ -9,8 +8,7 @@ import DsaTracker from './pages/DsaTracker';
 import CodingArena from './pages/CodingArena';
 import Login from './pages/Login';
 import { Toast } from './components/Toast';
-import { LayoutGrid, FileText, Briefcase, GraduationCap, Cpu, Building2, Code, Menu, X, LogOut, User as UserIcon, Hammer } from 'lucide-react';
-
+import { LayoutGrid, FileText, GraduationCap, Cpu, Building2, Code, Menu, X, LogOut, User as UserIcon, Hammer } from 'lucide-react';
 const API_BASE = import.meta.env.VITE_API_BASE || (
   window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8000'
