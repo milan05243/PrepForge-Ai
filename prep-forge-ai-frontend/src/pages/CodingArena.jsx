@@ -246,24 +246,25 @@ export default function CodingArena({ apiBase, authHeaders, problemId, triggerTo
       <div className="lg:col-span-7 flex flex-col h-full relative">
         {/* Editor bar select */}
         <div className="p-3 bg-slate-950/40 border-b border-white/5 flex items-center justify-between">
-          <select 
-            value={lang} 
-            onChange={(e) => setLang(e.target.value)}
-            className="bg-[#0a0d17] border border-white/10 rounded-lg p-1.5 text-white text-xs focus:outline-none focus:border-indigo-500 font-bold uppercase tracking-wider"
-          >
-            <option value="python">Python</option>
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-          </select>
+  <div>
+    <h3 className="text-white font-bold text-sm">
+      🚀 PrepForge IDE
+    </h3>
+    <p className="text-slate-500 text-xs">
+      Write, test and improve your coding solutions.
+    </p>
+  </div>
 
-          <button 
-            onClick={() => setCode(problem.templates[lang])}
-            className="text-slate-400 hover:text-white flex items-center gap-1 text-xs font-semibold"
-            title="Reset code template"
-          >
-            <RotateCcw className="h-3.5 w-3.5" /> Reset
-          </button>
-        </div>
+  <select
+    value={lang}
+    onChange={(e) => setLang(e.target.value)}
+    className="bg-[#0a0d17] border border-white/10 rounded-lg p-1.5 text-white text-xs focus:outline-none focus:border-indigo-500 font-bold uppercase tracking-wider"
+  >
+    <option value="python">Python</option>
+    <option value="cpp">C++</option>
+    <option value="java">Java</option>
+  </select>
+</div>
 
         {/* Monaco Editor Container */}
         <div className="flex-1 relative bg-[#1e1e1e]">
