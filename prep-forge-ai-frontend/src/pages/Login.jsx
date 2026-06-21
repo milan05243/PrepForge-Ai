@@ -202,15 +202,25 @@ if (googleBtn) {
             {/* Google authentication button container */}
             <div className="flex flex-col items-center gap-4 py-4 min-h-[120px]">
               {loading ? (
-  <div className="flex flex-col items-center gap-3 py-4">
-    <div className="h-6 w-6 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
-    <span className="text-slate-400 text-xs font-medium">
-      Signing you in...
-    </span>
-    <p className="text-slate-500 text-xs mt-1">
-  Preparing your workspace
-</p>
+  <div className="flex flex-col items-center gap-5 py-6">
+  <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-yellow-400 flex items-center justify-center shadow-lg shadow-orange-500/30 animate-pulse">
+    <Hammer className="h-7 w-7 text-white" />
   </div>
+
+  <div className="text-center">
+    <h3 className="text-white font-bold text-lg">
+      Signing you in...
+    </h3>
+
+    <p className="text-slate-400 text-sm mt-1">
+      Preparing your PrepForge workspace
+    </p>
+  </div>
+
+  <div className="w-40 h-1 bg-slate-800 rounded-full overflow-hidden">
+    <div className="h-full w-1/2 bg-gradient-to-r from-indigo-500 to-purple-500 animate-pulse rounded-full" />
+  </div>
+</div>
               ) : (
                 <div className="space-y-4">
                   {/* Google OAuth GSI Button Container */}
