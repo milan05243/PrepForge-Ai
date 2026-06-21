@@ -272,10 +272,27 @@ console.log("Auth Headers:", authHeaders);
       {!isArenaMode && (
         <footer className="border-t border-white/5 bg-[#03060c] py-6 text-center text-xs text-slate-500 font-medium">
           <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>&copy; 2026 PrepForge AI. Open-source placement preparation portal.</p>
+            <p>&copy; 2026 PrepForge AI • Practice • Prepare • Get Hired</p>
             <div className="flex gap-4">
-              <span className="hover:text-indigo-400 cursor-pointer">LinkedIn Project</span>
-              <span className="hover:text-indigo-400 cursor-pointer">GitHub Repository</span>
+              <div className="flex gap-4">
+  <a
+    href="https://www.linkedin.com/in/milan-choudhary-57a3b7323"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="hover:text-indigo-400 transition-colors"
+  >
+    LinkedIn
+  </a>
+
+  <a
+    href="https://github.com/milan05243/PrepForge-Ai"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="hover:text-indigo-400 transition-colors"
+  >
+    GitHub
+  </a>
+</div>
             </div>
           </div>
         </footer>
